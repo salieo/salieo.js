@@ -31,28 +31,27 @@ async function verifyScreenshot(testName, chromePage) {
   return diff / (expectedPNG.width * expectedPNG.height) < verifyThreshold;
 }
 
+function screenshotTest(name, test, chromePage) {
+  test.test(name, async (test) => {
+    try {
+      test.ok(await verifyScreenshot(name, chromePage), "Check screenshot against expected.");
+    } catch (error) {
+      test.fail(error);
+    }
+    test.end();
+  }, {timeout: 30000});
+}
+
 (async () => {
   //Set up puppeteer
   const browser = await puppeteer.launch();
   const chromePage = await browser.newPage();
   await chromePage.setViewport({width: 1920, height: 1080});
 
-  test.test("background_img", async (test) => {
-    test.ok(await verifyScreenshot("background_img", chromePage).catch(error => test.fail(error)), "Check screenshot against expected.");
-    test.end();
-  }, {timeout: 30000});
-  test.test("img_tag", async (test) => {
-    test.ok(await verifyScreenshot("img_tag", chromePage).catch(error => test.fail(error)), "Check screenshot against expected.");
-    test.end();
-  }, {timeout: 30000});
-  test.test("combined", async (test) => {
-    test.ok(await verifyScreenshot("combined", chromePage).catch(error => test.fail(error)), "Check screenshot against expected.");
-    test.end();
-  }, {timeout: 30000});
-  test.test("avoid_text", async (test) => {
-    test.ok(await verifyScreenshot("avoid_text", chromePage).catch(error => test.fail(error)), "Check screenshot against expected.");
-    test.end();
-  }, {timeout: 30000});
+  screenshotTest("background_img", test, chromePage);
+  screenshotTest("img_tag", test, chromePage);
+  screenshotTest("avoid_text", test, chromePage);
+  screenshotTest("combined", test, chromePage);
 
   test.onFinish(async () => {
     await browser.close();
