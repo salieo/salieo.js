@@ -7,3 +7,6 @@ package-lock.json
 
 #Ignore build artifacts
 dist/
+
+#Ignore test artifacts
+test/tmp_*.png
