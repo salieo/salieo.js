@@ -3,22 +3,14 @@ const fs = require("fs"),
   PNG = require('pngjs').PNG,
   pixelmatch = require('pixelmatch'),
   puppeteer = require('puppeteer'),
-  tap = require('tap');
-
-const numTests = 4;
-
-tap.jobs = numTests; //Run tests in parallel
-tap.plan(numTests);
+  test = require('tape');
 
 const pixelMatchThreshold = 0.05,
   verifyThreshold = 0.05,
   expectedImgDir = "./expected_img",
   testPagesDir = "./test_pages";
 
-async function verifyScreenshot(testName, browser) {
-  const chromePage = await browser.newPage();
-  await chromePage.setViewport({width: 1920, height: 1080});
-
+async function verifyScreenshot(testName, chromePage) {
   const pageURL = 'file://' + path.join(__dirname, testPagesDir, testName + ".html"),
     expectedImgPath = path.join(__dirname, expectedImgDir, testName + ".png"),
     tmpImgPath = path.join(__dirname, 'tmp_' + testName + '_result.png');
@@ -42,25 +34,27 @@ async function verifyScreenshot(testName, browser) {
 (async () => {
   //Set up puppeteer
   const browser = await puppeteer.launch();
+  const chromePage = await browser.newPage();
+  await chromePage.setViewport({width: 1920, height: 1080});
 
-  tap.test("background_img", async (tap) => {
-    if(!await verifyScreenshot("background_img", browser)) tap.fail();
-    tap.end();
+  test.test("background_img", async (test) => {
+    test.ok(await verifyScreenshot("background_img", chromePage), "Check screenshot against expected.");
+    test.end();
   });
-  tap.test("img_tag", async (tap) => {
-    if(!await verifyScreenshot("img_tag", browser)) tap.fail();
-    tap.end();
+  test.test("img_tag", async (test) => {
+    test.ok(await verifyScreenshot("img_tag", chromePage), "Check screenshot against expected.");
+    test.end();
   });
-  tap.test("avoid_text", async (tap) => {
-    if(!await verifyScreenshot("avoid_text", browser)) tap.fail();
-    tap.end();
+  test.test("avoid_text", async (test) => {
+    test.ok(await verifyScreenshot("avoid_text", chromePage), "Check screenshot against expected.");
+    test.end();
   });
-  tap.test("combined", async (tap) => {
-    if(!await verifyScreenshot("combined", browser)) tap.fail();
-    tap.end();
+  test.test("combined", async (test) => {
+    test.ok(await verifyScreenshot("combined", chromePage), "Check screenshot against expected.");
+    test.end();
   });
 
-  tap.tearDown(async () => {
+  test.onFinish(async () => {
     await browser.close();
   });
 })();

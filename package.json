@@ -7,18 +7,19 @@
     "license": "MIT",
     "repository": "salieo/salieo.js",
     "devDependencies": {
-        "cropcalc-js": "^0.9.0",
         "browserify": "^14.5.0",
-        "puppeteer": "^0.13.0",
+        "cropcalc-js": "^0.9.0",
         "mkdirp": "^0.5.1",
         "pixelmatch": "^4.0.2",
         "pngjs": "^3.3.1",
-        "uglify-js": "^3.1.10",
-        "tap": "^10.7.3"
+        "puppeteer": "^0.13.0",
+        "tap-spec": "^4.1.1",
+        "tape": "^4.8.0",
+        "uglify-js": "^3.1.10"
     },
     "scripts": {
         "prebuild": "mkdirp dist",
         "build": "browserify ./src/salieo.js -s salieo > ./dist/salieo.js && uglifyjs ./dist/salieo.js -c -m > ./dist/salieo.min.js",
-        "test": "tap ./test/test.js --reporter spec"
+        "test": "tape ./test/test.js | tap-spec"
     }
 }
