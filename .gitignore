@@ -1,0 +1,9 @@
+#Ignore package installs
+node_modules/
+package-lock.json
+
+#Ignore Visual Studio Code configs
+.vscode/
+
+#Ignore build artifacts
+dist/

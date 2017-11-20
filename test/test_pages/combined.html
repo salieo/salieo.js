@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>combined</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <script type="text/javascript" src="../../dist/salieo.min.js" defer></script>
+    <script>
+        var mySalieo;
+        document.addEventListener("DOMContentLoaded", function () {
+            mySalieo = new salieo({
+                siteid: 'test'
+            });
+        })
+    </script>
+    <style>
+        .salieo {
+            width: 100%;
+            height: 800px;
+            background-size: cover;
+            position: relative;
+            display: block;
+        }
+    </style>
+</head>
+
+<body style="margin:0;">
+    <div class="salieo" style="background-image:url(https://images.unsplash.com/photo-1491380326909-4b44da1acca8?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=3000&fit=max&s=6675590317d399477e005e211f969b45);">
+        <div style="height:100%;margin-left:20%;margin-right:20%;display:table;">
+            <p class="salieo-avoid" style="text-align:left;font-size:6em;color:#fff;margin:0;display:table-cell;vertical-align:middle;">Avoid this!</p>
+        </div>
+    </div>
+    <div style="position:relative;">
+        <img class="salieo" src="https://images.unsplash.com/photo-1500066135008-35aaf39d75cb?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2500&fit=max&s=388c6eb5157304654f01992c85183c70">
+        <div style="display:table;position:absolute;top:50%;right:20%;transform:translateY(-50%)">
+            <p class="salieo-avoid" style="text-align:left;font-size:6em;color:#fff;margin:0;display:table-cell;vertical-align:middle;">Avoid this!</p>
+        </div>
+    </div>
+    <div class="salieo" style="background-image:url(https://images.unsplash.com/photo-1449459721444-e664f20ad26d?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2500&fit=max&s=9423bf3b850d88474a5a29024844aa22);"></div>
+    <img class="salieo" src="https://images.unsplash.com/photo-1466495227171-d05d7e3ac2b3?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&s=48e7c480763b45d0d81bdd9c05cb2042">
+</body>
+</html>
