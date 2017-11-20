@@ -21,7 +21,7 @@ function salieo(userOptions) {
     refresh();
 
     if(options.onresize) {
-        window.addEventListener('resize', function(event){
+        window.addEventListener('resize', function(event) {
             refresh();
         });
     }
@@ -110,7 +110,7 @@ function salieo(userOptions) {
             return;
         }
 
-        //Returns an array with the URL of the image and a boolean indicating whether or not the image is from an <img> tag.
+        //Returns an array with the URL of the image and a boolean indicating if the image is from an <img> tag.
         return [imageURL, isIMG];
     }
 
@@ -118,6 +118,11 @@ function salieo(userOptions) {
         var cacheKey = getCacheKey(currentImage.url);
 
         if(salieoDataCache[currentImage.url]) {
+            if(salieoDataCache[currentImage.url].elementRect) {
+                salieoDataCache[currentImage.url] = currentImage;
+                return; //This image data is currently being fetched so don't try to request it again.
+            }
+
             //We have this data in memory so no need to fetch it from the API
             positionElement(currentImage);
             return;
@@ -137,6 +142,7 @@ function salieo(userOptions) {
 
         //If we've gotten to this point we don't have data for this image cached, send the request to the API
         var request = new XMLHttpRequest();
+        salieoDataCache[currentImage.url] = currentImage;
 
         request.open('GET', 'https://api.salieo.com/cached/?url=' + encodeURIComponent(currentImage.url) + '&id=' + options["siteid"], true);
         request.onload = function () {
@@ -147,15 +153,14 @@ function salieo(userOptions) {
                     //Uh oh
                     logDebug("Salieo encountered an error while processing " + imageURL);
                 } else {
+                    var continueWith = salieoDataCache[currentImage.url]; //Continue with positioning the latest img object
                     salieoDataCache[currentImage.url] = salieoData; //Cache the data from the API
                     localStorage.setItem(getCacheKey(currentImage.url), JSON.stringify({
                         expires: Date.now() + 86400000, //Expires 1 day from now
                         data: salieoData
                     })); //Cache the data in localStorage
-
-                    positionElement(currentImage);
+                    positionElement(continueWith);
                 }
-
             } else {
                 //Server returned error
                 logDebug("Salieo encountered an error while processing " + imageURL);
