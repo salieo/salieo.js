@@ -45,12 +45,12 @@ async function verifyScreenshot(testName, chromePage) {
     test.ok(await verifyScreenshot("img_tag", chromePage).catch(error => test.fail(error)), "Check screenshot against expected.");
     test.end();
   }, {timeout: 30000});
-  test.test("avoid_text", async (test) => {
-    test.ok(await verifyScreenshot("avoid_text", chromePage).catch(error => test.fail(error)), "Check screenshot against expected.");
-    test.end();
-  }, {timeout: 30000});
   test.test("combined", async (test) => {
     test.ok(await verifyScreenshot("combined", chromePage).catch(error => test.fail(error)), "Check screenshot against expected.");
+    test.end();
+  }, {timeout: 30000});
+  test.test("avoid_text", async (test) => {
+    test.ok(await verifyScreenshot("avoid_text", chromePage).catch(error => test.fail(error)), "Check screenshot against expected.");
     test.end();
   }, {timeout: 30000});
 
