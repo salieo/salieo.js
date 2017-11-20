@@ -40,19 +40,19 @@ async function verifyScreenshot(testName, chromePage) {
   test.test("background_img", async (test) => {
     test.ok(await verifyScreenshot("background_img", chromePage).catch(error => test.fail(error)), "Check screenshot against expected.");
     test.end();
-  });
+  }, {timeout: 10000});
   test.test("img_tag", async (test) => {
     test.ok(await verifyScreenshot("img_tag", chromePage).catch(error => test.fail(error)), "Check screenshot against expected.");
     test.end();
-  });
+  }, {timeout: 10000});
   test.test("avoid_text", async (test) => {
     test.ok(await verifyScreenshot("avoid_text", chromePage).catch(error => test.fail(error)), "Check screenshot against expected.");
     test.end();
-  });
+  }, {timeout: 10000});
   test.test("combined", async (test) => {
     test.ok(await verifyScreenshot("combined", chromePage).catch(error => test.fail(error)), "Check screenshot against expected.");
     test.end();
-  });
+  }, {timeout: 10000});
 
   test.onFinish(async () => {
     await browser.close();
