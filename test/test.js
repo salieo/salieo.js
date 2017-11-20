@@ -15,7 +15,7 @@ async function verifyScreenshot(testName, chromePage) {
     expectedImgPath = path.join(__dirname, expectedImgDir, testName + ".png"),
     tmpImgPath = path.join(__dirname, 'tmp_' + testName + '_result.png');
   
-  await chromePage.goto(pageURL, {waitUntil: 'load'});
+  await chromePage.goto(pageURL, {waitUntil: 'load', timeout:100000});
   await chromePage.screenshot({path: tmpImgPath, fullPage: true});
 
   
@@ -39,7 +39,7 @@ function screenshotTest(name, test, chromePage) {
       test.fail(error);
     }
     test.end();
-  }, {timeout: 30000});
+  }, {timeout: 110000});
 }
 
 (async () => {
