@@ -49,7 +49,7 @@ function screenshotTest(name, test, chromePage) {
 
 (async () => {
   //Set up puppeteer
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const chromePage = await browser.newPage();
   await chromePage.setViewport({width: 1920, height: 1080});
 
@@ -59,7 +59,6 @@ function screenshotTest(name, test, chromePage) {
   screenshotTest("combined", test, chromePage);
 
   test.onFinish(async () => {
-    await page.close();
     await browser.close();
   });
 })();
