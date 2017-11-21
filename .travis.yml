@@ -12,6 +12,7 @@ cache:
 
 script:
   - npm run build
+  - sudo apt-get update
   - npm run test --silent
 
 deploy:
