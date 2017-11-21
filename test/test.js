@@ -49,7 +49,7 @@ function screenshotTest(name, test, chromePage) {
 
 (async () => {
   //Set up puppeteer
-  const browser = await puppeteer.launch({args: ['--no-sandbox']});
+  const browser = await puppeteer.launch();
   const chromePage = await browser.newPage();
   await chromePage.setViewport({width: 1920, height: 1080});
 
