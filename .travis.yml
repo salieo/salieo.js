@@ -17,9 +17,6 @@ script:
   - npm run build
   - npm run test --silent
 
-before_deploy:
-  - touch .npmignore #So that the dist folder is not ignored (as .gitignore does)
-
 deploy:
   - provider: npm
     email: $NPM_EMAIL
