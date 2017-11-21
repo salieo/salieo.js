@@ -1,5 +1,4 @@
-sudo: false 
-dist: trusty
+sudo: false
 
 language: node_js
 
@@ -13,9 +12,11 @@ cache:
   directories:
     - "node_modules"
 
+before_install:
+  - sudo apt-get update
+
 script:
   - npm run build
-  - sudo apt-get update
   - npm run test --silent
 
 deploy:
