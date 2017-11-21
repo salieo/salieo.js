@@ -28,13 +28,18 @@ async function verifyScreenshot(testName, chromePage) {
 
   fs.unlinkSync(tmpImgPath); //Delete the temporary test image
 
-  return diff / (expectedPNG.width * expectedPNG.height) < verifyThreshold;
+  return diff / (expectedPNG.width * expectedPNG.height);
 }
 
 function screenshotTest(name, test, chromePage) {
   test.test(name, async (test) => {
     try {
-      test.ok(await verifyScreenshot(name, chromePage), "Check screenshot against expected.");
+      var testDiff = await verifyScreenshot(name, chromePage);
+      if(testDiff < verifyThreshold) {
+        test.pass("Test screenshot matches expected.");
+      } else {
+        test.fail("Test screenshot does not match! Difference: " + (testDiff * 100).toFixed(1) + "%");
+      }
     } catch (error) {
       test.fail(error);
     }
@@ -54,6 +59,7 @@ function screenshotTest(name, test, chromePage) {
   screenshotTest("combined", test, chromePage);
 
   test.onFinish(async () => {
+    await page.close();
     await browser.close();
   });
 })();
