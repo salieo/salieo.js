@@ -1,4 +1,4 @@
-sudo: required 
+sudo: false 
 dist: trusty
 
 language: node_js
@@ -15,6 +15,7 @@ cache:
 
 script:
   - npm run build
+  - sudo apt-get update
   - npm run test --silent
 
 deploy:
