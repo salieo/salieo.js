@@ -49,13 +49,14 @@ function screenshotTest(name, test, chromePage) {
 
 (async () => {
   //Set up puppeteer
-  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+  const browser = await puppeteer.launch({args: ['--no-sandbox']});
   const chromePage = await browser.newPage();
   await chromePage.setViewport({width: 1920, height: 1080});
 
   screenshotTest("background_img", test, chromePage);
   screenshotTest("img_tag", test, chromePage);
   screenshotTest("avoid_text", test, chromePage);
+  screenshotTest("combined", test, chromePage);
   screenshotTest("combined", test, chromePage);
 
   test.onFinish(async () => {
