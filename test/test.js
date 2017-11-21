@@ -59,6 +59,7 @@ function screenshotTest(name, test, chromePage) {
   screenshotTest("combined", test, chromePage);
 
   test.onFinish(async () => {
+    await chromePage.close();
     await browser.close();
   });
 })();
