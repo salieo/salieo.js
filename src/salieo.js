@@ -225,9 +225,6 @@ function salieo(userOptions) {
                     break;
             }
             currentImage.cropOptions["zoom"] = "focus-fit";
-        } else {
-            //It's too close to call - so do nothing
-            console.log("Too close to call");
         }
     }
 
