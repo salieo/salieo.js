@@ -41,7 +41,7 @@ npm install salieo.js
 Create an instance, passing in your [options](#options).
 
 ```
-const instance;
+var instance;
 document.addEventListener("DOMContentLoaded", function() {
     instance = new salieo({
         site_id: "YOURSITEID"
