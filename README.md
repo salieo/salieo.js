@@ -158,7 +158,7 @@ The `salieo-avoid` class (or a custom class as specified with [`avoid_class`](#a
 
 The behaviour of an avoid area can optionally be controlled by applying the `data-salieo-avoid` attribute to the element with the [avoid_class](#avoid_class).
 
-**NOTE:** The `data-salieo-avoid` attribute should be applied to the element that needs avoiding, *not* the image.
+**NOTE:** The `data-salieo-avoid` attribute should be applied to the element to be avoided, *not* the image.
 
 **Example:**
 

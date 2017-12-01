@@ -5,10 +5,11 @@ function salieo(userOptions) {
     var salieoDataCache = {};
 
     var options = {
-        "class": "salieo",
-        "zoom": false,
-        "debug": false,
-        "onresize": true
+        img_class: "salieo",
+        avoid_class: "salieo-avoid",
+        watch_resize: true,
+        crop_options: {},
+        debug: false
     }
 
     //Check if we might be in debug mode
@@ -20,7 +21,7 @@ function salieo(userOptions) {
     setOpts(options, userOptions);
     refresh();
 
-    if(options.onresize) {
+    if(options.watch_resize) {
         window.addEventListener('resize', function(event) {
             refresh();
         });
@@ -36,7 +37,7 @@ function salieo(userOptions) {
     }
 
     function logDebug(message) {
-        if (options["debug"]) {
+        if (options.debug) {
             console.log(message);
         }
     }
@@ -61,21 +62,19 @@ function salieo(userOptions) {
         var DPR = window.devicePixelRatio;
         
         var cropOptions = {
-            "target-width": displayWidth,
-            "target-height": displayHeight,
-            "actual-width": salieoData["original-width"] / DPR,
-            "actual-height": salieoData["original-height"] / DPR,
-            "output-units": "pixel",
-            "zoom": false
+            target_width: displayWidth,
+            target_height: displayHeight,
+            actual_width: salieoData.orig_width / DPR,
+            actual_height: salieoData.orig_height / DPR
         }
 
         setOpts(cropOptions, currentImage.cropOptions); //Override defaults if any cropOptions are already set for this element
 
         returnedCrop = cropcalcJS.findCrop(salieoData, cropOptions);
 
-        var scale = (displayWidth) / ((returnedCrop["x2"] - returnedCrop["x1"]) * DPR);
-        var offsetX = returnedCrop["x1"] * -1 * scale * DPR;
-        var offsetY = returnedCrop["y1"] * -1 * scale * DPR;
+        var scale = (displayWidth) / ((returnedCrop.x2 - returnedCrop.x1) * DPR);
+        var offsetX = returnedCrop.x1 * -1 * scale * DPR;
+        var offsetY = returnedCrop.y1 * -1 * scale * DPR;
 
         if (currentImage.isIMG) {
             //Dealing with <img>
@@ -85,7 +84,7 @@ function salieo(userOptions) {
         }
         //Dealing with CSS background image
         element.style.backgroundPosition = offsetX + "px " + offsetY + "px";
-        element.style.backgroundSize = Math.ceil(salieoData["original-width"] * scale) + "px " + Math.ceil(salieoData["original-height"] * scale) + "px";
+        element.style.backgroundSize = Math.ceil(salieoData.orig_width * scale) + "px " + Math.ceil(salieoData.orig_height * scale) + "px";
     }
 
     function getElementURL(element) {
@@ -98,7 +97,7 @@ function salieo(userOptions) {
             var style = element.currentStyle || window.getComputedStyle(element, false);
             // For IE we need to remove quotes to the proper url
             if (!style.backgroundImage) {
-                logDebug("Background image not found for element with ID: " + element.id, options);
+                logDebug("Background image not found for element with ID: " + element.id);
                 return;
             }
             isIMG = false;
@@ -106,7 +105,7 @@ function salieo(userOptions) {
         }
 
         if (imageURL === "" || typeof imageURL === "undefined") {
-            logDebug("Image URL could not be determined for element with ID: " + element.id, options);
+            logDebug("Image URL not found for element with ID: " + element.id);
             return;
         }
 
@@ -144,14 +143,14 @@ function salieo(userOptions) {
         var request = new XMLHttpRequest();
         salieoDataCache[currentImage.url] = currentImage;
 
-        request.open('GET', 'https://api.salieo.com/cached/?url=' + encodeURIComponent(currentImage.url) + '&id=' + options["siteid"], true);
+        request.open('GET', 'https://api.salieo.com/cached/?url=' + encodeURIComponent(currentImage.url) + '&id=' + options.site_id, true);
         request.onload = function () {
             if (this.status >= 200 && this.status < 400) {
                 //Success!
                 var salieoData = JSON.parse(this.response);
-                if (typeof salieoData["suggested-crops"] === 'undefined') {
+                if (typeof salieoData.crops.suggested === 'undefined') {
                     //Uh oh
-                    logDebug("Salieo encountered an error while processing " + imageURL);
+                    logDebug("Error while processing: " + imageURL);
                 } else {
                     var continueWith = salieoDataCache[currentImage.url]; //Continue with positioning the latest img object
                     salieoDataCache[currentImage.url] = salieoData; //Cache the data from the API
@@ -163,11 +162,11 @@ function salieo(userOptions) {
                 }
             } else {
                 //Server returned error
-                logDebug("Salieo encountered an error while processing " + imageURL);
+                logDebug("Error while processing: " + imageURL);
             }
         };
         request.onerror = function () {
-            logDebug("Could not establish connection with Salieo API to process " + imageURL);
+            logDebug("Could connect to Salieo API to process: " + imageURL);
         };
         request.send();
     }
@@ -177,16 +176,18 @@ function salieo(userOptions) {
         var elementRect = currentImage.elementRect;
         var displayWidth = currentImage.elementRect.width;
         var displayHeight = currentImage.elementRect.height;
+        var avoidElem;
         var avoidRect;
 
         for(var j = 0; j < avoidAreas.length; j++) {
-            if(avoidAreas[j].top >= elementRect.top && avoidAreas[j].bottom <= elementRect.bottom && avoidAreas[j].left >= elementRect.left && avoidAreas[j].right <= elementRect.right) {
-                avoidRect = avoidAreas[j];
+            avoidRect = avoidAreas[j].elementRect;
+            if(avoidRect.top >= elementRect.top && avoidRect.bottom <= elementRect.bottom && avoidRect.left >= elementRect.left && avoidRect.right <= elementRect.right) {
+                avoidElem = avoidAreas[j];
                 break;
             }
         }
 
-        if(!avoidRect) {
+        if(!avoidElem) {
             return;
         }
 
@@ -194,49 +195,67 @@ function salieo(userOptions) {
         var bottomAmt = (elementRect.bottom - avoidRect.bottom) / elementRect.height;
         var leftAmt = (avoidRect.left - elementRect.left) / elementRect.width;
         var rightAmt = (elementRect.right - avoidRect.right) / elementRect.width;
-        
-        var amtArr = [topAmt, leftAmt, bottomAmt, rightAmt];
-        
-        var bestZone = 0;
-        for (var i = 1; i < amtArr.length; i++) {
-            if (amtArr[i] > amtArr[bestZone]) {
-                bestZone = i;
+
+        var bestZoneMapping = {top: 0, bottom: 1, left: 2, right: 3};
+        var bestZone = avoidElem.dataset.salieoAvoid ? bestZoneMapping[avoidElem.dataset.salieoAvoid] : undefined;
+
+        if(!bestZone && bestZone !== 0) { //Either a specific zone wasn't specified, or "auto" was specified if this is true
+            var amtArr = [topAmt, leftAmt, bottomAmt, rightAmt];
+
+            bestZone = 0;
+            for (var i = 1; i < amtArr.length; i++) {
+                if (amtArr[i] > amtArr[bestZone]) {
+                    bestZone = i;
+                }
+            }
+            if(amtArr[bestZone] <= amtArr[(bestZone + 2) % amtArr.length] + 0.2) { //Has to be at least 20% bigger than its opposite side
+                return;
             }
         }
-        
-        if(amtArr[bestZone] > amtArr[(bestZone + 2) % amtArr.length] + 0.2) { //Has to be at least 20% bigger than its opposite side
-            //We're good to go
-            switch (bestZone) {
-                case 0:
-                    //Top is greatest
-                    currentImage.cropOptions["focus-region"] = {"y1": 0, "y2": topAmt * displayHeight};
-                    break;
-                case 1:
-                    //Left is greatest
-                    currentImage.cropOptions["focus-region"] = {"x1": 0, "x2": leftAmt * displayWidth};
-                    break;
-                case 2:
-                    //Bottom is greatest
-                    currentImage.cropOptions["focus-region"] = {"y1": (1 - bottomAmt) * displayHeight, "y2": displayHeight};
-                    break;
-                case 3:
-                    //Right is greatest
-                    currentImage.cropOptions["focus-region"] = {"x1": (1 - rightAmt) * displayWidth, "x2": displayWidth};
-                    break;
-            }
-            currentImage.cropOptions["zoom"] = "focus-fit";
+
+        switch (bestZone) {
+            case 0:
+                //Top is greatest
+                currentImage.cropOptions.focus = {y2: topAmt * displayHeight};
+                break;
+            case 1:
+                //Left is greatest
+                currentImage.cropOptions.focus = {x2: leftAmt * displayWidth};
+                break;
+            case 2:
+                //Bottom is greatest
+                currentImage.cropOptions.focus = {y1: (1 - bottomAmt) * displayHeight};
+                break;
+            case 3:
+                //Right is greatest
+                currentImage.cropOptions.focus = {x1: (1 - rightAmt) * displayWidth};
+                break;
         }
+        currentImage.cropOptions.zoom = "focus";
     }
 
     function addAttributes(currentImage) {
         var dataset = currentImage.element.dataset; //Dataset is not supported by <= IE10
+
+        // Add zoom option
         if(dataset.salieoZoom) {
-            currentImage.cropOptions.zoom = parseInt(dataset.salieoZoom);
+            currentImage.cropOptions.zoom = isNaN(dataset.salieoZoom) ? dataset.salieoZoom : parseInt(dataset.salieoZoom);
         }
+
+        // Add focus options
+        var focusSides = ["X1", "X2", "Y1", "Y2"];
+        for(var i = 0; i < focusSides.length; i++) {
+            if(dataset["salieoFocus" + focusSides[i]]) {
+                currentImage.cropOptions.focus = currentImage.cropOptions.focus || {};
+                currentImage.cropOptions.focus[toLowerCase(focusSides[i])] = (parseInt(dataset["salieoFocus" + focusSides[i]]) / 100) 
+                    * (i < 2 ? currentImage.elementRect.width : currentImage.elementRect.height);
+            }
+        }
+
     }
 
     function refresh() {
-        var rawElements = document.getElementsByClassName(options["class"]);
+        var rawElements = document.getElementsByClassName(options.img_class);
         var newSalieoDataCache = {};
         var tmpImgInfo, currentImage;
 
@@ -267,16 +286,16 @@ function salieo(userOptions) {
     
     function reprocess() {
         //Get information for avoid areas
-        var avoidElements = document.querySelectorAll("[class*='salieo-avoid']");
+        var avoidElements = document.getElementsByClassName(options.avoid_class);
         var avoidAreas = [];
         for(var i = 0; i < avoidElements.length; i++) {
-            avoidAreas.push(avoidElements[i].getBoundingClientRect());
+            avoidAreas.push({elementRect: avoidElements[i].getBoundingClientRect(), dataset: avoidElements[i].dataset});
         }
 
         var tmpElementRect;
         for(var i = 0; i < loadedImages.length; i++) {  
             loadedImages[i].elementRect = loadedImages[i].element.getBoundingClientRect();
-            loadedImages[i].cropOptions = {};
+            loadedImages[i].cropOptions = options.crop_options;
 
             addAvoidArea(loadedImages[i], avoidAreas);
             addAttributes(loadedImages[i]);
