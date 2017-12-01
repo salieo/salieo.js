@@ -295,7 +295,7 @@ function salieo(userOptions) {
         var tmpElementRect;
         for(var i = 0; i < loadedImages.length; i++) {  
             loadedImages[i].elementRect = loadedImages[i].element.getBoundingClientRect();
-            loadedImages[i].cropOptions = options.crop_options;
+            loadedImages[i].cropOptions = Object.create(options.crop_options);
 
             addAvoidArea(loadedImages[i], avoidAreas);
             addAttributes(loadedImages[i]);
