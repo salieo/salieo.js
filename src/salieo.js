@@ -256,7 +256,7 @@ function salieo(userOptions) {
         for(var i = 0; i < focusSides.length; i++) {
             if(dataset["salieoFocus" + focusSides[i]]) {
                 currentImage.cropOptions.focus = currentImage.cropOptions.focus || {};
-                currentImage.cropOptions.focus[toLowerCase(focusSides[i])] = (parseInt(dataset["salieoFocus" + focusSides[i]]) / 100) 
+                currentImage.cropOptions.focus[focusSides[i].toLowerCase()] = (parseInt(dataset["salieoFocus" + focusSides[i]]) / 100) 
                     * (i < 2 ? currentImage.elementRect.width : currentImage.elementRect.height);
             }
         }
