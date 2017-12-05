@@ -117,8 +117,13 @@ function salieo(userOptions) {
         var cacheKey = getCacheKey(currentImage.url);
 
         if(salieoDataCache[currentImage.url]) {
-            if(salieoDataCache[currentImage.url].elementRect) {
-                salieoDataCache[currentImage.url] = currentImage;
+            if(Array.isArray(salieoDataCache[currentImage.url])) {
+                var lastIndex = salieoDataCache[currentImage.url].indexOf(currentImage); //See if this element is already in the process queue
+                if(lastIndex !== -1) {
+                    salieoDataCache[currentImage.url][lastIndex] = currentImage; //This is the same image element with updated elementRect
+                } else {
+                    salieoDataCache[currentImage.url].push(currentImage); //This is a new image element waiting on the same image to load
+                }
                 return; //This image data is currently being fetched so don't try to request it again.
             }
 
@@ -141,7 +146,7 @@ function salieo(userOptions) {
 
         //If we've gotten to this point we don't have data for this image cached, send the request to the API
         var request = new XMLHttpRequest();
-        salieoDataCache[currentImage.url] = currentImage;
+        salieoDataCache[currentImage.url] = [currentImage];
 
         request.open('GET', 'https://api.salieo.com/cached/?url=' + encodeURIComponent(currentImage.url) + '&id=' + options.site_id, true);
         request.onload = function () {
@@ -152,13 +157,17 @@ function salieo(userOptions) {
                     //Uh oh
                     logDebug("Error while processing: " + imageURL);
                 } else {
-                    var continueWith = salieoDataCache[currentImage.url]; //Continue with positioning the latest img object
+                    var processQueue = salieoDataCache[currentImage.url]; //Continue with positioning the elements waiting for this image to load
+
                     salieoDataCache[currentImage.url] = salieoData; //Cache the data from the API
                     localStorage.setItem(getCacheKey(currentImage.url), JSON.stringify({
                         expires: Date.now() + 86400000, //Expires 1 day from now
                         data: salieoData
                     })); //Cache the data in localStorage
-                    positionElement(continueWith);
+
+                    for(var i = 0; i < processQueue.length; i++) {
+                        positionElement(processQueue[i]);
+                    }
                 }
             } else {
                 //Server returned error
