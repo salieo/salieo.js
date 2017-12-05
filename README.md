@@ -32,7 +32,7 @@ Get started quickly by including salieo.js in your site's `<head>` with the foll
 
 Or if you'd rather use your own build system that's fine too. As salieo.js is built as a UMD bundle, you can use it with just about any module loader you like.
 
-```bash
+```shell
 npm install salieo.js
 ```
 
