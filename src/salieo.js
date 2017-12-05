@@ -1,8 +1,13 @@
 var cropcalcJS = require("cropcalc-js");
+var debounce = require("debounce");
+var ResizeObserverPolyfill = require("resize-observer-polyfill");
+
+var ResizeObserver = ResizeObserver ? ResizeObserver : ResizeObserverPolyfill;
 
 function salieo(userOptions) {
     var loadedImages = [];
     var salieoDataCache = {};
+    var ro;
 
     var options = {
         img_class: "salieo",
@@ -18,14 +23,12 @@ function salieo(userOptions) {
         window.addEventListener("message", triggerEditMode);
     }
 
+    if(options.watch_resize) {
+        ro = new ResizeObserver(debounce(refresh, 10));
+    }
+
     setOpts(options, userOptions);
     refresh();
-
-    if(options.watch_resize) {
-        window.addEventListener('resize', function(event) {
-            refresh();
-        });
-    }
 
     //Handy to use functions
     function setOpts(standard, user) {
@@ -264,6 +267,10 @@ function salieo(userOptions) {
     }
 
     function refresh() {
+        if(ro) {
+            ro.disconnect();
+        }
+
         var rawElements = document.getElementsByClassName(options.img_class);
         var newSalieoDataCache = {};
         var tmpImgInfo, currentImage;
@@ -271,6 +278,10 @@ function salieo(userOptions) {
         loadedImages = [];
 
         for(var i = 0; i < rawElements.length; i++) {
+            if(ro) {
+                ro.observe(rawElements[i]);
+            }
+
             tmpImgInfo = getElementURL(rawElements[i]);
             if(!tmpImgInfo) {
                 continue; //Error getting image URL
@@ -298,11 +309,15 @@ function salieo(userOptions) {
         var avoidElements = document.getElementsByClassName(options.avoid_class);
         var avoidAreas = [];
         for(var i = 0; i < avoidElements.length; i++) {
+            if(ro) {
+                ro.observe(avoidElements[i]);
+            }
+
             avoidAreas.push({elementRect: avoidElements[i].getBoundingClientRect(), dataset: avoidElements[i].dataset});
         }
 
         var tmpElementRect;
-        for(var i = 0; i < loadedImages.length; i++) {  
+        for(var i = 0; i < loadedImages.length; i++) {
             loadedImages[i].elementRect = loadedImages[i].element.getBoundingClientRect();
             loadedImages[i].cropOptions = Object.create(options.crop_options);
 
