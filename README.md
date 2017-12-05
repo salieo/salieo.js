@@ -82,6 +82,13 @@ The class of `<img>` or objects with a `background-image` to that should be proc
 
 The class of objects that should be avoided when positioning a subject. More information is in the [Avoid Areas](#avoid-areas) section.
 
+### watch_resize
+**Default:** `true`
+
+If enabled, salieo.js will call [`refresh()`](#refresh) when changes to the size of any [avoid area](#avoid-areas) or image is detected using [ResizeObserver](https://developers.google.com/web/updates/2016/10/resizeobserver).
+
+As a sidenote, due to the poor [browser support](https://caniuse.com/#feat=resizeobserver) for [ResizeObserver](https://developers.google.com/web/updates/2016/10/resizeobserver), salieo.js bundles a [polyfill](https://github.com/que-etc/resize-observer-polyfill).
+
 ### crop_options
 **Default:** `undefined`
 
