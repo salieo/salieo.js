@@ -26,13 +26,13 @@ All modern browsers (and IE11) are supported by salieo.js:
 
 Get started quickly by including salieo.js in your site's `<head>` with the following:
 
-```
+```html
 <script src="https://cdn.jsdelivr.net/npm/salieo.js@0/dist/salieo.min.js" defer></script>
 ```
 
 Or if you'd rather use your own build system that's fine too. As salieo.js is built as a UMD bundle, you can use it with just about any module loader you like.
 
-```
+```bash
 npm install salieo.js
 ```
 
@@ -40,7 +40,7 @@ npm install salieo.js
 
 Create an instance, passing in your [options](#options).
 
-```
+```javascript
 var instance;
 document.addEventListener("DOMContentLoaded", function() {
     instance = new salieo({
@@ -66,7 +66,7 @@ Required options have a *
 ### site_id *
 The ID of your site used for identification with the Salieo API. This can be found from your Salieo Dashboard.
 
-```
+```javascript
 var options = {
     site_id: "ABCDEF"
 };
@@ -96,7 +96,7 @@ Can be set to an object of [cropcalc-js options](https://github.com/salieo/cropc
 
 ***NOTE:** The `target_width`, `target_height`, `actual_width` and `actual_height` options cannot be specified here as they are set on a per-image basis.
 
-```
+```javascript
 var options = {
     crop_options: {
         zoom: "auto"
@@ -110,13 +110,6 @@ var options = {
 
 If enabled with `true`, salieo will not suppress any error messages resulting from failed API calls, helping pinpoint any issues.
 
-```
-var options = {
-    debug: false
-    ...
-};
-```
-
 ## Crop Options
 
 Options that modify how an image is cropped can be specified on a per-image basis through the use of `data-salieo-OPTION` attributes. These options are passed directly to the [cropcalc-js](https://github.com/salieo/cropcalc-js) algorithm. A full list of avaiable options can be found [here](https://github.com/salieo/cropcalc-js#options).
@@ -129,7 +122,7 @@ Options that modify how an image is cropped can be specified on a per-image basi
 
 This example sets the [cropcalc-js](https://github.com/salieo/cropcalc-js) option `zoom` to `"auto"` for this image.
 
-```
+```html
 <img src="https://www.example.com/example.jpg" data-salieo-zoom="auto">
 ```
 
@@ -149,7 +142,7 @@ Below are the mappings from the [cropcalc-js options](https://github.com/salieo/
 
 This example sets the focus area for this image to be the left half of the crop.
 
-```
+```html
 <img src="https://www.example.com/example.jpg" class="salieo" data-salieo-focus-x2="50">
 ```
 
@@ -171,7 +164,7 @@ The behaviour of an avoid area can optionally be controlled by applying the `dat
 
 This example sets any images that fall below this text element to center the subject in the free space to the right of the text element.
 
-```
+```html
 <p class="salieo-avoid" data-salieo-avoid="right">Avoid this!</p>
 ```
 
