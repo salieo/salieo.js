@@ -148,7 +148,7 @@ This example sets the focus area for this image to be the left half of the crop.
 
 ## Avoid Areas
 
-Avoid areas provide an easy way to ensure the subject of an image is positioned in free space, not behind text or another overlay. See a [JSFiddle example](https://jsfiddle.net/tv7ndhvg/).
+Avoid areas provide an easy way to ensure the subject of an image is positioned in free space, not behind text or another overlay. See a [JSFiddle example](https://jsfiddle.net/q6wu82ru/).
 
 The `salieo-avoid` class (or a custom class as specified with [`avoid_class`](#avoid_class)) can be applied to any object that is positioned over an image that salieo will process. Salieo will then automatically set the [`focus`](https://github.com/salieo/cropcalc-js#focus-1) for that image to be the largest rectangle of free space either to the right, left, top or bottom of that object. The [`zoom`](https://github.com/salieo/cropcalc-js#zoom) option for that image will also be set to [`"focus"`](https://github.com/salieo/cropcalc-js#focus).
 
