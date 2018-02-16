@@ -4,6 +4,44 @@ var ResizeObserverPolyfill = require("resize-observer-polyfill");
 
 var ResizeObserver = ResizeObserver ? ResizeObserver : ResizeObserverPolyfill;
 
+function editMode(imgElements, cb) {
+    //Add styles
+    var sheet = document.createElement('style')
+    sheet.innerHTML = "svg.edit-button{width:20px;height:20px;position:absolute;top:50px;right:50px;background-color:#757575;fill:#fff;box-shadow:10px 10px 50px 0 rgba(0,0,0,.4);border:2.5px solid #fff;padding:10px;border-radius:25px;transition:all .5s ease,transform .75s cubic-bezier(0,0,.1,1);transform:scale(1)}svg.edit-button:active,svg.edit-button:focus,svg.edit-button:hover{background-color:#fff;fill:#000;cursor:pointer}a.pre-entry svg.edit-button{transform:scale(0)}";
+    document.body.appendChild(sheet);
+
+    //Set up edit buttons on each image element
+    for(let i = 0; i < imgElements.length; i++) {
+        let editButton = document.createElement("a");
+        editButton.innerHTML = "<svg class='edit-button' viewBox='0 0 24 24'><path d='M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z' /></svg>";
+        editButton.className = "pre-entry"; //So that the edit button is added with transform: scale(0);
+        (function(currentURL) {
+            editButton.addEventListener("click", function() {
+                cb(currentURL);
+            });
+        })(imgElements[i].url);
+        if(imgElements[i].element.tagName.toUpperCase() === "IMG") {
+            var parent = imgElements[i].element.parentNode;
+            var wrapper = document.createElement("div");
+            wrapper.style.position = "relative";
+            parent.replaceChild(wrapper, imgElements[i].element);
+            wrapper.appendChild(imgElements[i].element);
+            wrapper.appendChild(editButton);
+        } else {
+            var style = window.getComputedStyle(imgElements[i].element);
+            var position = style.getPropertyValue('position');
+            if(position.toLowerCase() === "static") {
+                imgElements[i].element.style.position = "relative";
+            }
+            imgElements[i].element.appendChild(editButton);
+        }
+        //Entry has completed - remove pre-entry class
+        setTimeout(function() {
+            editButton.className = "";
+        }, 100);
+    }
+}
+
 function salieo(userOptions) {
     var loadedImages = [];
     var salieoDataCache = {};
@@ -20,7 +58,16 @@ function salieo(userOptions) {
     //Check if we might be in debug mode
     if (window.opener) {
         //Could be in a popup so possibly in edit mode
-        window.addEventListener("message", triggerEditMode);
+        window.addEventListener("message", function(event) {
+			//We are 90% sure we are in edit mode. (could be wrong origin though)
+			var source = event.source;
+			if(event.data === "trigger_edit_mode") {
+				//Yup, we are definately in edit mode now!
+				editMode(loadedImages, function(url) {
+					source.postMessage(url, "*");
+				});
+			}
+		});
     }
 
     if(options.watch_resize) {
@@ -42,13 +89,6 @@ function salieo(userOptions) {
     function logDebug(message) {
         if (options.debug) {
             console.log(message);
-        }
-    }
-
-    function triggerEditMode(event) {
-        if (event.data === "edit") {
-            window.removeEventListener("message", triggerEditMode);
-            debugMode(imgElements, event.source);
         }
     }
 
