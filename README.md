@@ -195,7 +195,7 @@ The region below the element to be avoided will always be selected as the focus 
 
 ## Licence
 
-MIT. © 2017 Salieo
+MIT. © 2018 Salieo
 
 [![Certified Awesome](https://img.shields.io/badge/certified-awesome-orange.svg?style=flat-square)](https://www.salieo.com)
 
