@@ -49,7 +49,7 @@ function editMode(imgElements, cb) {
 
 function salieo(userOptions) {
   var loadedImages = [];
-  var salieoDataCache = {};
+  var salieoDataCache = userOptions.cache ? userOptions.cache : {};
   var ro;
 
   var options = {
