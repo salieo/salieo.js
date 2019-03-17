@@ -49,7 +49,15 @@ function editMode(imgElements, cb) {
 
 function salieo(userOptions) {
   var loadedImages = [];
-  var salieoDataCache = userOptions.cache ? userOptions.cache : {};
+  
+  // Hardcode the demo cache
+  var salieoDataCache = {
+    "https://www.salieo.com/demoimg/hike.jpg": {"crops":{"fallback":[{"x2":791,"id":1,"y1":460,"y2":540,"x1":696}],"suggested":[{"x2":891,"id":1,"y1":430,"y2":691,"x1":689}]},"orig_width":1200,"orig_height":800},
+    "https://www.salieo.com/demoimg/truck.jpg": {"crops":{"fallback":[],"suggested":[{"x2":1198,"id":1,"y1":103,"y2":1107,"x1":202},{"x2":1023,"id":2,"y1":476,"y2":735,"x1":788}]},"orig_width":1200,"orig_height":1200},
+    "https://www.salieo.com/demoimg/deer.jpg": {"crops":{"fallback":[{"x2":1269,"id":1,"y1":670,"y2":889,"x1":1015}],"suggested":[{"x2":2158,"id":1,"y1":342,"y2":1413,"x1":11},{"x2":1982,"id":2,"y1":360,"y2":1395,"x1":398},{"x2":1377,"id":3,"y1":659,"y2":1096,"x1":1004}]},"orig_width":2160,"orig_height":1440},
+    "https://www.salieo.com/demoimg/yellow.jpg": {"crops":{"fallback":[{"x2":1386,"id":1,"y1":454,"y2":992,"x1":580}],"suggested":[{"x2":1400,"id":1,"y1":441,"y2":1438,"x1":567}]},"orig_width":2160,"orig_height":1440}
+  }
+  
   var ro;
 
   var options = {
