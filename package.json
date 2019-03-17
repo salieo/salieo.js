@@ -2,7 +2,7 @@
     "author": "Salieo <hello@salieo.com>",
     "name": "salieo.js",
     "description": "Instantly responsify your site's images.",
-    "version": "0.9.12",
+    "version": "0.10.0",
     "homepage": "https://www.salieo.com",
     "license": "MIT",
     "repository": "salieo/salieo.js",
